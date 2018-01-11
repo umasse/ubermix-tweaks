@@ -1,0 +1,24 @@
+#!/bin/bash
+if [[ $(is-aufs-mode) == "yes" ]]; then
+    if [[ -z $(mount | grep "/ro type ext4 (r") ]]; then
+        # Weird, /ro is not mounted at all, do nothing
+        echo "no /ro found"
+    else
+        if [[ $(mount | grep "/ro type ext4 (rw") ]]; then
+            # It's unlocked, lock it
+            mount -o ro,remount /ro
+
+            if [[ $(mount | grep "/ro type ext4 (ro") ]]; then
+                # It's locked
+                echo "locked"
+            else
+                echo "error"
+            fi
+        else
+            if [[ $(mount | grep "/ro type ext4 (ro") ]]; then
+                # It's already locked
+                echo "already locked"
+            fi
+        fi
+    fi
+fi
