@@ -1,0 +1,49 @@
+#!/usr/bin/python
+import Tkinter, Image, ImageTk, sys, os, shlex, subprocess
+from commands import *
+
+master = Tkinter.Tk()
+
+if (len(sys.argv) < 3):
+	print "Usage: splash-launch <image file path> <display milliseconds> <executable> [executable args]"
+	exit(1)
+
+# unrem to prevent duplicates from launching
+#status, text = getstatusoutput("pgrep -f "+sys.argv[3]+" -c")
+#if int(text) > 2:
+#	print "Command already running"
+#	exit(1)
+
+image_file = Image.open(sys.argv[1])
+image = ImageTk.PhotoImage(image_file)
+
+# Fill the screen.
+screen_width  = master.winfo_screenwidth()
+screen_height = master.winfo_screenheight()
+master.geometry("%dx%d%+d%+d" % (image_file.size[0], image_file.size[1], screen_width / 2 - image_file.size[0] / 2, screen_height / 2 - image_file.size[1] / 2))
+
+s = Tkinter.Canvas(master, width  = image_file.size[0], height = image_file.size[1])
+
+# Remove window-manager decorations:  don't allow
+# the user to destroy or iconify the splash screen.
+master.overrideredirect(1)
+
+# Center the image.
+s.create_image( image_file.size[0] / 2, image_file.size[1] / 2, image = image)
+#s.create_text( screen_width / 2, screen_height / 2,
+#		  text = "This is an example of a message.",
+#		  fill = "white", font = "normal 45")
+s.pack()
+
+	# execute the command with any patameters entered
+command = sys.argv[3]
+if len(sys.argv) > 3:
+	for i in range(4, len(sys.argv)):
+		command += " " + sys.argv[i]
+os.system(command +' &')
+
+	# After <argument3> milliseconds--remove the
+	# splash screen.
+master.after(sys.argv[2], lambda: master.destroy())
+master.mainloop()
+

@@ -1,0 +1,25 @@
+#!/bin/bash
+
+FOUND=false
+for ETH_ADDR in `ifconfig -a | grep HWaddr | awk '{print $5}' | cut -d ":" -f 4-6 --output-delimiter=""`; do
+	if grep -q $ETH_ADDR /etc/hostname; then
+		FOUND=true
+	fi
+done
+
+if  ! $FOUND; then
+	echo "system-$ETH_ADDR" >/etc/hostname
+	sed -i "s/127.0.1.1.*$/127.0.1.1\tsystem-$ETH_ADDR/g" /etc/hosts
+	if `mount | grep -q "SYSTEM on /ro"`; then
+		mount -o rw,remount /ro
+		cp /etc/hostname /ro/etc/hostname
+		cp /etc/hosts /ro/etc/hosts
+		mount -o ro,remount /ro
+	fi
+	hostname "system-$ETH_ADDR"
+
+	service bluetooth stop
+        rm -rf /var/lib/bluetooth/*
+        sed -i "s/^Name =.*$/Name = system-$ETH_ADDR/g" /etc/bluetooth/main.conf
+        service bluetooth start
+fi

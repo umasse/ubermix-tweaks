@@ -1,0 +1,18 @@
+#!/bin/bash
+
+if `dpkg -l grub* | grep -q iF` && `mount | grep -q aufs`; then
+	dpkg --purge --auto-deconfigure grub-pc grub-gfxpayload-lists grub-efi-amd64 grub-efi
+fi
+
+if ! `apt-mark showhold grub-common | grep -q grub-common`; then
+	#Hold grub pkgs from auto-update to prevent errors
+	apt-mark hold grub-common
+	apt-mark hold grub-efi
+	apt-mark hold grub-efi-amd64
+	apt-mark hold grub-efi-amd64-bin
+	apt-mark hold grub-efi-ia32-bin
+	apt-mark hold grub-pc
+	apt-mark hold grub2-common
+	apt-mark hold grub-gfxpayload-lists
+fi
+

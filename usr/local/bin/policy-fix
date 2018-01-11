@@ -1,0 +1,4 @@
+#!/bin/bash
+
+sed -i 's/auth_admin_keep/yes/g' /usr/share/polkit-1/actions/org.debian.apt.policy
+sed -i 's/auth_admin/yes/g' /usr/share/polkit-1/actions/org.debian.apt.policy

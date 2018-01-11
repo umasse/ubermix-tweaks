@@ -1,0 +1,5 @@
+#!/bin/bash
+
+echo "#/org/cinnamon/enabled-applets" >/etc/dconf/db/ubermix.d/locks/00_locks 
+touch /etc/dconf/db/ubermix.d/locks
+dconf update

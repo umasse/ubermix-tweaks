@@ -1,0 +1,10 @@
+#!/bin/bash
+
+if ! `grep -q amd64 /etc/apt/sources.list.d/google-webdesigner.list`; then
+	sed -i 's/^deb http/deb [arch=amd64] http/g' /etc/apt/sources.list.d/google-webdesigner.list
+fi
+
+if ! `grep -q amd64 /etc/apt/sources.list.d/google-chrome.list`; then
+	sed -i 's/^deb http/deb [arch=amd64] http/g' /etc/apt/sources.list.d/google-chrome.list
+fi
+

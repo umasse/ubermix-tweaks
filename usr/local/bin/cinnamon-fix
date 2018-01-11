@@ -1,0 +1,5 @@
+#!/bin/bash
+
+if ! `grep -q plank /usr/share/cinnamon/cinnamon-settings/cinnamon-settings.py`; then
+	sed -i -n 'H;${x;s/^\n//;s/\[_("Bluetooth.*\n/[_("Dock"),                          "plank --preferences",          "plank",              "prefs",          _("dock")],\n    &/;p;}' /usr/share/cinnamon/cinnamon-settings/cinnamon-settings.py
+fi

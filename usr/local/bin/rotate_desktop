@@ -1,0 +1,89 @@
+#!/bin/bash
+#
+# rotate_desktop
+#
+# Rotates modern Linux desktop screen and input devices to match, based
+# on orientation values passed from Cinnamon rotation values. Great for
+# convertible notebooks. Call this script from panel launchers, keyboard
+# shortcuts, or touch gesture bindings (xSwipe, touchegg, etc.).
+#
+# Using transformation matrix bits taken from:
+#   https://wiki.ubuntu.com/X/InputCoordinateTransformation
+#
+
+# Should find hardware automatically, but if it doesn't, configure below
+# variables to match your hardware (names taken from `xinput` output).
+#
+TOUCHPAD=$(xinput --list --name-only | grep -i touchpad)
+TOUCHSCREEN=$(xinput --list --name-only | grep -i touchscreen)
+
+if [[ -e ~/.cinnamon/rotation ]]; then
+  ORIENT=$(cat ~/.cinnamon/rotation)
+else
+  ORIENT='normal'
+fi
+
+if [ -z "$1" ]; then
+    if [[ $ORIENT != "left" ]]; then
+      ORIENT='left';
+    else
+      ORIENT='normal'
+    fi
+else
+  ORIENT="$1"
+fi
+
+if [[ $ORIENT == "1" ]]; then
+   ORIENT="normal"
+elif [[ $ORIENT == "2" ]]; then
+   ORIENT="left"
+elif [[ $ORIENT == "8" ]]; then
+   ORIENT="right"
+elif [[ $ORIENT == "4" ]]; then
+   ORIENT="inverted"
+fi
+
+echo $ORIENT>~/.cinnamon/rotation
+
+function do_rotate
+{
+  xrandr --output $1 --rotate $2
+
+  TRANSFORM='Coordinate Transformation Matrix'
+
+  case "$2" in
+    normal)
+      [ ! -z "$TOUCHPAD" ]    && while read -r TP; do xinput set-prop "$TP"    "$TRANSFORM" 1 0 0 0 1 0 0 0 1; done <<< "$TOUCHPAD"
+      [ ! -z "$TOUCHSCREEN" ] && while read -r TS; do xinput set-prop "$TS" "$TRANSFORM" 1 0 0 0 1 0 0 0 1; done <<< "$TOUCHSCREEN"
+      ;;
+    inverted)
+      [ ! -z "$TOUCHPAD" ]    && while read -r TP; do xinput set-prop "$TP"    "$TRANSFORM" -1 0 1 0 -1 1 0 0 1; done <<< "$TOUCHPAD"
+      [ ! -z "$TOUCHSCREEN" ] && while read -r TS; do xinput set-prop "$TS" "$TRANSFORM" -1 0 1 0 -1 1 0 0 1; done <<< "$TOUCHSCREEN"
+      ;;
+    left)
+      [ ! -z "$TOUCHPAD" ]    && while read -r TP; do xinput set-prop "$TP"    "$TRANSFORM" 0 -1 1 1 0 0 0 0 1; done <<< "$TOUCHPAD"
+      [ ! -z "$TOUCHSCREEN" ] && while read -r TS; do xinput set-prop "$TS" "$TRANSFORM" 0 -1 1 1 0 0 0 0 1; done <<< "$TOUCHSCREEN"
+      ;;
+    right)
+      [ ! -z "$TOUCHPAD" ]    && while read -r TP; do xinput set-prop "$TP"    "$TRANSFORM" 0 1 0 -1 0 1 0 0 1; done <<< "$TOUCHPAD"
+      [ ! -z "$TOUCHSCREEN" ] && while read -r TS; do xinput set-prop "$TS" "$TRANSFORM" 0 1 0 -1 0 1 0 0 1; done <<< "$TOUCHSCREEN"
+      ;;
+  esac
+}
+
+XDISPLAY=`xrandr --current | grep primary | sed -e 's/ .*//g'`
+XROT=`xrandr --current --verbose | grep primary | egrep -o ' (normal|left|inverted|right) '`
+
+do_rotate $XDISPLAY $ORIENT
+
+if [ ! -z "$2" ]; then
+  sleep $2
+  do_rotate $XDISPLAY $XROT
+  exit 0
+fi
+
+#if [[ $ORIENT == "normal" ]]; then
+#  gsettings set org.cinnamon.desktop.interface scaling-factor 0
+#else
+#  gsettings set org.cinnamon.desktop.interface scaling-factor 2
+#fi

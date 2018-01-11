@@ -1,0 +1,7 @@
+#!/bin/bash
+
+if `echo $DESKTOP_SESSION | grep -q "une-efl"`; then
+	/usr/bin/nautilus --no-desktop $@
+else
+	/usr/bin/nautilus $@
+fi

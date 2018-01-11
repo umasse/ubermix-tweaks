@@ -1,0 +1,45 @@
+#!/bin/bash
+
+INST_PATH=`echo $(readlink -f $0) | sed "s/$(basename $0)//g"`
+cd $INST_PATH
+
+#mkdir /home/user/.config/autostart/
+#cp onboard.desktop /home/user/.config/autostart/
+
+gsettings set org.cinnamon enabled-applets "['panel1:left:0:menu@cinnamon.org:15', 'panel1:left:1:panel-launchers@cinnamon.org:2', 'panel1:left:2:window-list@cinnamon.org:3', 'panel1:right:0:notifications@cinnamon.org:4', 'panel1:right:10:sound@cinnamon.org:19', 'panel1:right:4:removable-drives@cinnamon.org:6', 'panel1:right:5:keyboard@cinnamon.org:7', 'panel1:right:6:windows-quick-list@cinnamon.org:14', 'panel1:right:7:power@cinnamon.org:11', 'panel1:right:8:network@cinnamon.org:9', 'panel1:right:9:systray@cinnamon.org:12', 'panel1:right:11:calendar@cinnamon.org:13', 'panel1:right:12:power-settings@cinnamon.org:16', 'panel1:right:0:better-xrandr@cinnamon.org:20', 'panel1:right:0:on-screen-keyboard@cinnamon.org:21']"
+gsettings set org.cinnamon.desktop.interface font-name 'Sans 11'
+gsettings set org.cinnamon.desktop.interface gtk-theme 'Arc-Dark-Touch'
+gsettings set org.cinnamon.desktop.interface text-scaling-factor 1.3
+gsettings set org.cinnamon.desktop.interface toolkit-accessibility true
+gsettings set org.cinnamon.desktop.wm.preferences theme 'Arc-Dark-Touch'
+gsettings set org.cinnamon.desktop.wm.preferences titlebar-font 'Sans Bold 11'
+gsettings set org.cinnamon.theme name 'Arc-Dark-Touch'
+gsettings set org.cinnamon.desktop.a11y.mouse secondary-click-enabled true
+gsettings set org.cinnamon.desktop.a11y.mouse secondary-click-time 1.2
+gsettings set org.cinnamon.keyboard keyboard-position 'bottom'
+gsettings set org.nemo.desktop font 'Sans 11'
+gsettings set org.nemo.window-state sidebar-width 220
+gsettings set org.nemo.icon-view default-zoom-level 'large'
+gsettings set org.gnome.desktop.interface document-font-name 'Sans 11'
+gsettings set org.gnome.desktop.interface text-scaling-factor 1.3
+gsettings set org.gnome.desktop.interface toolkit-accessibility true
+gsettings set org.gnome.desktop.screensaver embedded-keyboard-command 'onboard --xid'
+gsettings set org.gnome.desktop.screensaver embedded-keyboard-enabled true
+gsettings set org.onboard show-status-icon false
+gsettings set org.onboard start-minimized true
+gsettings set org.onboard layout '/usr/share/onboard/layouts/Better Small.onboard'
+gsettings set org.onboard.auto-show enabled false
+gsettings set org.onboard.typing-assistance.word-suggestions enabled false
+gsettings set org.onboard.window docking-enabled true
+gsettings set org.onboard.window force-to-top true
+gsettings set org.onboard.window.landscape dock-width 1011
+gsettings set org.onboard.window.landscape dock-expand false
+gsettings set org.onboard.window.landscape dock-height 342
+gsettings set org.onboard.window.portrait dock-height 371
+gsettings set org.onboard.icon-palette in-use true
+gsettings set org.onboard.icon-palette.landscape x 1747
+gsettings set org.onboard.icon-palette.landscape y 944
+gsettings set org.onboard.icon-palette.portrait x 964
+gsettings set org.onboard.icon-palette.portrait y 1781
+dconf write /net/launchpad/plank/docks/dock1/icon-size 64
+

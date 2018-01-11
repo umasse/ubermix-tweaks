@@ -1,0 +1,14 @@
+#!/bin/bash
+
+if ! `grep -q password-store /opt/google/chrome/google-chrome`; then
+	sed -i 's/^exec.*$/exec -a "$0" "$HERE\/chrome"  "--password-store=basic" "$@"/' /opt/google/chrome/google-chrome
+fi
+
+#if `grep -q StartupNotify /usr/share/applications/firefox.desktop`; then
+#        sed -i 's/^StartupNotify.*$//g' /usr/share/applications/firefox.desktop
+#fi
+
+#if `grep -q StartupNotify /usr/share/applications/thunderbird.desktop`; then
+#        sed -i 's/^StartupNotify.*$//g' /usr/share/applications/thunderbird.desktop
+#fi
+

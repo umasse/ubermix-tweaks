@@ -1,0 +1,6 @@
+#!/bin/bash
+
+sed -i "s/^enabled-applets.*$/$(echo enabled-applets=$(gsettings get org.cinnamon enabled-applets))/g" /etc/dconf/db/ubermix.d/00_ubermix_settings
+echo "/org/cinnamon/enabled-applets" >/etc/dconf/db/ubermix.d/locks/00_locks 
+touch /etc/dconf/db/ubermix.d/locks
+dconf update
