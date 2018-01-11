@@ -1,0 +1,9 @@
+#!/bin/bash
+AUFSMODE=false
+if `mount | grep -q "^aufs on / type aufs"`; then
+    # AUFS mode is on
+    AUFSMODE=true
+    echo "yes"
+else
+    echo "no"
+fi
