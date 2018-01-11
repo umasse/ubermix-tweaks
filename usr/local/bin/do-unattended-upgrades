@@ -1,0 +1,21 @@
+#!/bin/bash
+
+# Check if we are at BIS then set the proxy file
+PROXYLINE="Acquire::http { Proxy \"http://aptcache.localbis.net:3142\"; };"
+ATBIS=$(/usr/local/bin/check-at-bis)
+if [[ "$ATBIS" == "yes" ]]; then
+   echo $PROXYLINE > /etc/apt/apt.conf.d/00aptproxy
+else
+   rm -f /etc/apt/apt.conf.d/00aptproxy
+fi
+
+UPGRADELOG="/tmp/unattended-upgrade.log"
+if [[ ! -e "$UPGRADELOG" ]]; then
+  unattended-upgrades -v > "$UPGRADELOG"
+fi
+
+if [[ $(find "$UPGRADELOG" -mmin +1320 -print) ]]; then
+  echo "File $UPGRADELOG exists and is older than 1320 minutes"
+  echo "Running again after more than 1320 minutes" >> "$UPGRADELOG"
+  unattended-upgrades -v >> "$UPGRADELOG"
+fi
