@@ -1,42 +1,25 @@
 #!/bin/bash
 
-PREFIX="ITAsusE205"
-#PREFIX="Cart1-E205-01"
-
-# Using helper script
-ETH_ADDR=$(get-mac-address-suffix)
-
-COUNTER=0
-# Try 5 more times to get an address
-while [[ "$COUNTER" < 5 && "$ETH_ADDR" == "000000" ]]; do
-    echo "wait 2s, counter: $COUNTER"
-    sleep 2s
-    COUNTER=$(( $COUNTER + 1 ))
-    ETH_ADDR=$(get-mac-address-suffix)
+FOUND=false
+for ETH_ADDR in `ifconfig -a | grep HWaddr | awk '{print $5}' | cut -d ":" -f 4-6 --output-delimiter=""`; do
+	if grep -q $ETH_ADDR /etc/hostname; then
+		FOUND=true
+	fi
 done
 
-echo "Calculated name: $PREFIX-$ETH_ADDR"
+if  ! $FOUND; then
+	echo "system-$ETH_ADDR" >/etc/hostname
+	sed -i "s/127.0.1.1.*$/127.0.1.1\tsystem-$ETH_ADDR/g" /etc/hosts
+	if `mount | grep -q "SYSTEM on /ro"`; then
+		mount -o rw,remount /ro
+		cp /etc/hostname /ro/etc/hostname
+		cp /etc/hosts /ro/etc/hosts
+		mount -o ro,remount /ro
+	fi
+	hostname "system-$ETH_ADDR"
 
-grep "$PREFIX-$ETH_ADDR" /etc/hostname
-grep "$PREFIX-$ETH_ADDR" /etc/hosts
-
-if [[ -z $(grep "$PREFIX-$ETH_ADDR" /etc/hostname) || -z $(grep "$PREFIX-$ETH_ADDR" /etc/hosts) ]]; then
-    echo "Name $PREFIX-$ETH_ADDR not found in /etc/hostname and/or /etc/hosts. Updating."
-
-    echo "$PREFIX-$ETH_ADDR" >/etc/hostname
-    sed -i "s/127.0.1.1.*$/127.0.1.1\ $PREFIX-$ETH_ADDR/g" /etc/hosts
-    if [[ $(is-aufs-mode) == "yes"  ]]; then
-        ro-unlock
-        cp /etc/hostname /ro/etc/hostname
-        cp /etc/hosts /ro/etc/hosts
-        ro-lock
-    fi
-
-    hostname "$PREFIX-$ETH_ADDR"
-
-    service bluetooth stop
-    rm -rf /var/lib/bluetooth/*
-    sed -i "s/^Name =.*$/Name = $PREFIX-$ETH_ADDR/g" /etc/bluetooth/main.conf
-    service bluetooth start
-
+	service bluetooth stop
+        rm -rf /var/lib/bluetooth/*
+        sed -i "s/^Name =.*$/Name = system-$ETH_ADDR/g" /etc/bluetooth/main.conf
+        service bluetooth start
 fi

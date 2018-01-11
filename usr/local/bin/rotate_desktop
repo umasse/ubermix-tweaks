@@ -15,8 +15,7 @@
 # variables to match your hardware (names taken from `xinput` output).
 #
 TOUCHPAD=$(xinput --list --name-only | grep -i touchpad)
-#TOUCHSCREEN=$(xinput --list --name-only | grep -i touchscreen)
-TOUCHSCREEN=$(xinput --list --name-only | grep -i  "touchscreen\|SIS0457")
+TOUCHSCREEN=$(xinput --list --name-only | grep -i touchscreen)
 
 if [[ -e ~/.cinnamon/rotation ]]; then
   ORIENT=$(cat ~/.cinnamon/rotation)
