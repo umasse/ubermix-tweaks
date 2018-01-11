@@ -1,0 +1,10 @@
+#!/bin/bash
+# List MACs of all the network devices that start with e (ethernet) or w (wifi)
+# Ignore the lo address, just in case
+# keep only the last line, which should be wifi in most cases, in alphabetical order
+MACSUFFIX=$(cat /sys/class/net/[ew]*/address | grep -v "00:00:00:00:00:00" | tail -n1 | cut -d ":" -f 4-6 --output-delimiter="")
+if [[ -z "$MACSUFFIX" ]]; then
+    MACSUFFIX="000000"
+fi
+echo $MACSUFFIX
+#echo "000000"
