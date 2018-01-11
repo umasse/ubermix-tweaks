@@ -1,0 +1,21 @@
+#!/bin/bash
+# This script needs a file called bis.txt with content BIS at this address:
+HTTPCHECKFILE="http://10.5.0.10/bisfiles/bis.txt"
+CURRENTIP=$(ip route get 1.1.1.1 | awk '{print $NF; exit}')
+RESULT="no"
+
+# Check if IP address is one of the correct ones
+GOODIP="no"
+case "$CURRENTIP" in 
+    10.19.*|10.20.*|10.21.*|10.11.*) 
+        GOODIP="yes";;
+esac
+
+if [[ "$GOODIP" == "yes" ]]; then
+    CHECKWGET=$(wget -T 2 -O- -q $HTTPCHECKFILE)
+    if [[ "$CHECKWGET" == "BIS" ]]; then
+        RESULT="yes"
+    fi
+fi
+
+echo $RESULT
